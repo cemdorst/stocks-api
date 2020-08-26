@@ -4,13 +4,9 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-
-	"gopkg.in/mgo.v2/bson"
-
 	"github.com/gorilla/mux"
 	. "github.com/cemdorst/stocks-api/config"
 	. "github.com/cemdorst/stocks-api/dao"
-	. "github.com/cemdorst/stocks-api/models"
 )
 
 var config = Config{}
