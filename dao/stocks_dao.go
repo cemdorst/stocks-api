@@ -29,8 +29,8 @@ func (m *StocksDAO) Connect() {
 }
 
 // Find list of stocks
-func (m *StocksDAO) FindAll() ([]Stocks, error) {
-	var stocks []Stocks
+func (m *StocksDAO) FindAll() ([]Stock, error) {
+	var stocks []Stock
 	err := db.C(COLLECTION).Find(bson.M{}).All(&stocks)
 	return stocks, err
 }
