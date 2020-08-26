@@ -16,7 +16,7 @@ type StocksDAO struct {
 var db *mgo.Database
 
 const (
-	COLLECTION = "stocks"
+	COLLECTION = "all_stocks"
 )
 
 // Establish a connection to database
