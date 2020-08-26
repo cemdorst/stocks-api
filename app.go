@@ -23,7 +23,7 @@ func AllStocksEndPoint(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	respondWithJson(w, http.StatusOK, movies)
+	respondWithJson(w, http.StatusOK, stocks)
 }
 
 func respondWithError(w http.ResponseWriter, code int, msg string) {
