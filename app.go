@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -15,11 +16,23 @@ var dao = StocksDAO{}
 // GET list of stocks
 func AllStocksEndPoint(w http.ResponseWriter, r *http.Request) {
 	stocks, err := dao.FindAll()
+	fmt.Println(stocks)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 	respondWithJson(w, http.StatusOK, stocks)
+}
+
+func VolatilityEndPoint(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	historical_data, err := dao.FindHistoricalBySymbol(params["symbol"])
+	fmt.Println(historical_data)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJson(w, http.StatusOK, historical_data)
 }
 
 func respondWithError(w http.ResponseWriter, code int, msg string) {
@@ -46,6 +59,7 @@ func init() {
 func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/stocks", AllStocksEndPoint).Methods("GET")
+	r.HandleFunc("/historical/{symbol}", VolatilityEndPoint).Methods("GET")
 	if err := http.ListenAndServe(":3000", r); err != nil {
 		log.Fatal(err)
 	}

@@ -10,3 +10,15 @@ type Stock struct {
 	Sector      string        `bson:"sector" json:"sector"`
 	Subsector   string        `bson:"subsector" json:"subsector"`
 }
+
+type Historical struct {
+	Symbol      string        `bson:"symbol" json:"symbol"`
+	Close       float64       `json:"close"`
+	Date        string        `bson:"date" json:"date"`
+}
+
+type Volatility struct {
+	Symbol      string        `bson:"symbol" json:"symbol"`
+	Volty10     float64       `json:"10day"`
+	Volty30     float64       `json:"30day"`
+}
