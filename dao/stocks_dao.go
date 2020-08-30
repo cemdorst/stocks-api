@@ -2,6 +2,7 @@ package dao
 
 import (
 	"log"
+	"fmt"
 
 	. "github.com/cemdorst/stocks-api/models"
 	mgo "gopkg.in/mgo.v2"
@@ -40,5 +41,14 @@ func (m *StocksDAO) FindAll() ([]Stock, error) {
 func(m * StocksDAO) FindHistoricalBySymbol(symbol string)([]Historical, error) {
     var data []Historical
     err := db.C(HIST_COLLECTION).Find(bson.M{"symbol": symbol}).All(&data)
+    return data, err
+}
+
+// Find volatility data 
+func(m * StocksDAO) FindVolatilityBySymbol(symbol string)([]Volatility, error) {
+    var data []Volatility
+    //var historical_data []Historical
+    err := db.C(HIST_COLLECTION).Find(bson.M{"symbol": symbol}).All(&data)
+    fmt.Println(data)
     return data, err
 }

@@ -16,7 +16,6 @@ var dao = StocksDAO{}
 // GET list of stocks
 func AllStocksEndPoint(w http.ResponseWriter, r *http.Request) {
 	stocks, err := dao.FindAll()
-	fmt.Println(stocks)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -24,10 +23,9 @@ func AllStocksEndPoint(w http.ResponseWriter, r *http.Request) {
 	respondWithJson(w, http.StatusOK, stocks)
 }
 
-func VolatilityEndPoint(w http.ResponseWriter, r *http.Request) {
+func HistoricalEndPoint(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	historical_data, err := dao.FindHistoricalBySymbol(params["symbol"])
-	fmt.Println(historical_data)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -35,6 +33,16 @@ func VolatilityEndPoint(w http.ResponseWriter, r *http.Request) {
 	respondWithJson(w, http.StatusOK, historical_data)
 }
 
+func VolatilityEndPoint(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	data, err := dao.FindHistoricalBySymbol(params["symbol"])
+	fmt.Println(data)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJson(w, http.StatusOK, data)
+}
 func respondWithError(w http.ResponseWriter, code int, msg string) {
 	respondWithJson(w, code, map[string]string{"error": msg})
 }
@@ -59,7 +67,8 @@ func init() {
 func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/stocks", AllStocksEndPoint).Methods("GET")
-	r.HandleFunc("/historical/{symbol}", VolatilityEndPoint).Methods("GET")
+	r.HandleFunc("/historical/{symbol}", HistoricalEndPoint).Methods("GET")
+	r.HandleFunc("/volatility/{symbol}", VolatilityEndPoint).Methods("GET")
 	if err := http.ListenAndServe(":3000", r); err != nil {
 		log.Fatal(err)
 	}
