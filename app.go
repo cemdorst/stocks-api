@@ -1,22 +1,19 @@
 package main
 
 import (
-	//"fmt"
 	"encoding/json"
 	"log"
 	"net/http"
 	"github.com/gorilla/mux"
-	. "github.com/cemdorst/stocks-api/config"
 	. "github.com/cemdorst/stocks-api/aao"
 )
 
-var config = Config{}
 var aao = Historicals{}
 
 func HistoricalEndPoint(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	url := "/stocks/historicals/" + params["symbol"]
-	historical_data, err := aao.GetHistorical(url,"")
+	path := "/stocks/historicals/" + params["symbol"]
+	historical_data, err := aao.GetHistorical(path,"")
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return

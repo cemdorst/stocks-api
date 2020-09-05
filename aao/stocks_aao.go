@@ -1,19 +1,15 @@
 package aao
 
+
 import (
 	"log"
-	"fmt"
-
-	//. "github.com/cemdorst/stocks-api/models"
-	//"gopkg.in/mgo.v2/bson"
+	. "github.com/cemdorst/stocks-api/config"
 	"net/http"
 	"io/ioutil"
 	"encoding/json"
 )
 
-const (
-	API_BASE_URL = "https://mfinance.com.br/api/v1"
-)
+var config = Config{}
 
 type Historicals struct {
 	Symbol string `json:"symbol"`
@@ -30,12 +26,9 @@ type StocksAAO struct {
         Volume	float64 `json:"volume"`
 }
 
-//type Consume interface {
-//	GetHistorical()
-//}
-
 func (m *Historicals) GetHistorical(path,query string) (Historicals, error) {
-	response, err := http.Get(API_BASE_URL + path + query)
+	config.Read()
+	response, err := http.Get(config.APIbase + path + query)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -47,8 +40,6 @@ func (m *Historicals) GetHistorical(path,query string) (Historicals, error) {
 
 	var responseObject Historicals
 	json.Unmarshal(responseData, &responseObject)
-	fmt.Println(responseData)
-	fmt.Println(responseObject.Data)
 
 	return responseObject, err
 }

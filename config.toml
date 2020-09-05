@@ -1,2 +1,1 @@
-server="localhost"
-database="stocks"
+apibase="https://mfinance.com.br/api/v1"
