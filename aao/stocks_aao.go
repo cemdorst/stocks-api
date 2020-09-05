@@ -28,7 +28,7 @@ type Consume interface {
 	GetHistorical() []byte
 }
 
-func (m *StocksAAO) GetHistorical(path,query string) ([]byte) {
+func (m *StocksAAO) GetHistorical(path,query string) ([]byte, error) {
 	response, err := http.Get(API_BASE_URL + path + query)
 	if err != nil {
 		log.Fatal(err)
@@ -39,6 +39,6 @@ func (m *StocksAAO) GetHistorical(path,query string) ([]byte) {
 		log.Fatal(err)
 	}
 
-	return responseData
+	return responseData, err
 }
 
