@@ -11,12 +11,12 @@ import (
 )
 
 var config = Config{}
-var aao = StocksAAO{}
+var aao = Historicals{}
 
 func HistoricalEndPoint(w http.ResponseWriter, r *http.Request) {
-	//params := mux.Vars(r)
-	//historical_data, err := aao.GetHistorical(params["symbol"], ")
-	historical_data, err := aao.GetHistorical("historicals/BRSR3","")
+	params := mux.Vars(r)
+	url := "/stocks/historicals/" + params["symbol"]
+	historical_data, err := aao.GetHistorical(url,"")
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
