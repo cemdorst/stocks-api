@@ -22,6 +22,18 @@ func HistoricalEndPoint(w http.ResponseWriter, r *http.Request) {
 	respondWithJson(w, http.StatusOK, historical_data)
 }
 
+func VolatilityEndPoint(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	path := "/stocks/historicals/" + params["symbol"]
+	query := "?months=" + params["months"]
+	volatility_data, err := aao.CalculateVolatility(path,query)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJson(w, http.StatusOK, volatility_data)
+}
+
 func respondWithError(w http.ResponseWriter, code int, msg string) {
 	respondWithJson(w, code, map[string]string{"error": msg})
 }
@@ -38,6 +50,9 @@ func main() {
 	r := mux.NewRouter()
 	r.Path("/historical/{symbol}").Queries("months", "{months}").HandlerFunc(HistoricalEndPoint).Methods("GET")
 	r.Path("/historical/{symbol}").HandlerFunc(HistoricalEndPoint).Methods("GET")
+
+	r.Path("/volatility/{symbol}").Queries("months", "{months}").HandlerFunc(VolatilityEndPoint).Methods("GET")
+	r.Path("/volatility/{symbol}").HandlerFunc(VolatilityEndPoint).Methods("GET")
 	if err := http.ListenAndServe(":3000", r); err != nil {
 		log.Fatal(err)
 	}

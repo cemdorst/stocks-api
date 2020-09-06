@@ -1,9 +1,11 @@
 package aao
 
 import (
+	"fmt"
 	"log"
 	. "github.com/cemdorst/stocks-api/config"
 	. "github.com/cemdorst/stocks-api/models"
+	"github.com/montanaflynn/stats"
 	"net/http"
 	"io/ioutil"
 	"encoding/json"
@@ -11,9 +13,7 @@ import (
 
 var config = Config{}
 
-type Historicals StockHistoricals
-
-type Volatility struct {
+type Historicals struct {
 	*StockHistoricals
 	Variation []float64
 }
@@ -36,7 +36,7 @@ func (h *Historicals) GetHistorical(path,query string) (Historicals, error) {
 	return responseObject, err
 }
 
-func (v *Volatility) CalculateVolatility(path,query string) (Volatility, error) {
+func (v *Historicals) CalculateVolatility(path,query string) (Historicals, error) {
 	config.Read()
         response, err := http.Get(config.APIbase + path + query)
         if err != nil {
@@ -48,8 +48,19 @@ func (v *Volatility) CalculateVolatility(path,query string) (Volatility, error) 
                 log.Fatal(err)
         }
 
-        var responseObject Volatility
+        var responseObject Historicals
+	var last float64
         json.Unmarshal(responseData, &responseObject)
+	for i,value := range responseObject.Data {
+		if i == 0 {
+			last = value.Close
+			continue
+		}
+		responseObject.Variation = append(responseObject.Variation,value.Close/last)
+		last = value.Close
+	}
+	a, _ := stats.StandardDeviationPopulation(responseObject.Variation)
+	fmt.Println(a)
 
         return responseObject, err
 }
