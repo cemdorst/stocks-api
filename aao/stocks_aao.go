@@ -1,9 +1,9 @@
 package aao
 
-
 import (
 	"log"
 	. "github.com/cemdorst/stocks-api/config"
+	. "github.com/cemdorst/stocks-api/models"
 	"net/http"
 	"io/ioutil"
 	"encoding/json"
@@ -11,20 +11,7 @@ import (
 
 var config = Config{}
 
-type Historicals struct {
-	Symbol string `json:"symbol"`
-	Data []StocksAAO `json:"historicals"`
-}
-
-
-type StocksAAO struct {
-	Close	float64 `json:"close"`
-        Date	string `json:"date"`
-        High	float64 `json:"high"`
-        Low	float64 `json:"low"`
-        Open	float64 `json:"open"`
-        Volume	float64 `json:"volume"`
-}
+type Historicals StockHistoricals
 
 func (m *Historicals) GetHistorical(path,query string) (Historicals, error) {
 	config.Read()
@@ -43,4 +30,3 @@ func (m *Historicals) GetHistorical(path,query string) (Historicals, error) {
 
 	return responseObject, err
 }
-
