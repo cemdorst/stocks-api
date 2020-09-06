@@ -13,7 +13,12 @@ var config = Config{}
 
 type Historicals StockHistoricals
 
-func (m *Historicals) GetHistorical(path,query string) (Historicals, error) {
+type Volatility struct {
+	*StockHistoricals
+	Variation []float64
+}
+
+func (h *Historicals) GetHistorical(path,query string) (Historicals, error) {
 	config.Read()
 	response, err := http.Get(config.APIbase + path + query)
 	if err != nil {
@@ -29,4 +34,22 @@ func (m *Historicals) GetHistorical(path,query string) (Historicals, error) {
 	json.Unmarshal(responseData, &responseObject)
 
 	return responseObject, err
+}
+
+func (v *Volatility) CalculateVolatility(path,query string) (Volatility, error) {
+	config.Read()
+        response, err := http.Get(config.APIbase + path + query)
+        if err != nil {
+                log.Fatal(err)
+        }
+
+        responseData, err := ioutil.ReadAll(response.Body)
+        if err != nil {
+                log.Fatal(err)
+        }
+
+        var responseObject Volatility
+        json.Unmarshal(responseData, &responseObject)
+
+        return responseObject, err
 }
