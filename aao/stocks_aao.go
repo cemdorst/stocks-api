@@ -56,7 +56,8 @@ func (v *Historicals) CalculateVolatility(path,query string) (Historicals, error
 			last = value.Close
 			continue
 		}
-		responseObject.Variation = append(responseObject.Variation,value.Close/last)
+		diff := value.Close - last
+		responseObject.Variation = append(responseObject.Variation,diff/last)
 		last = value.Close
 	}
 	a, _ := stats.StandardDeviationPopulation(responseObject.Variation)
