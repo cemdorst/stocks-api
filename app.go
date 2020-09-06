@@ -13,7 +13,8 @@ var aao = Historicals{}
 func HistoricalEndPoint(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	path := "/stocks/historicals/" + params["symbol"]
-	historical_data, err := aao.GetHistorical(path,"")
+	query := "?months=" + params["months"]
+	historical_data, err := aao.GetHistorical(path,query)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -35,7 +36,8 @@ func respondWithJson(w http.ResponseWriter, code int, payload interface{}) {
 // Define HTTP request routes
 func main() {
 	r := mux.NewRouter()
-	r.HandleFunc("/historical/{symbol}", HistoricalEndPoint).Methods("GET")
+	r.Path("/historical/{symbol}").Queries("months", "{months}").HandlerFunc(HistoricalEndPoint).Methods("GET")
+	r.Path("/historical/{symbol}").HandlerFunc(HistoricalEndPoint).Methods("GET")
 	if err := http.ListenAndServe(":3000", r); err != nil {
 		log.Fatal(err)
 	}
