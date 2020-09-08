@@ -36,6 +36,24 @@ func (h *Historicals) GetHistorical(path,query string) (Historicals, error) {
 	return responseObject, err
 }
 
+func (v *Historicals) CalculateVariation() (*Historicals) {
+
+	var last float64
+	for i,value := range v.Data {
+		if i == 0 {
+			last = value.Close
+			continue
+		}
+		diff := value.Close - last
+		v.Variation = append(v.Variation,diff/last*100)
+		last = value.Close
+	}
+	a, _ := stats.StandardDeviationPopulation(v.Variation)
+	fmt.Println(a)
+
+        return v
+}
+
 func (v *Historicals) CalculateVolatility(path,query string) (Historicals, error) {
 	config.Read()
         response, err := http.Get(config.APIbase + path + query)
@@ -49,19 +67,8 @@ func (v *Historicals) CalculateVolatility(path,query string) (Historicals, error
         }
 
         var responseObject Historicals
-	var last float64
         json.Unmarshal(responseData, &responseObject)
-	for i,value := range responseObject.Data {
-		if i == 0 {
-			last = value.Close
-			continue
-		}
-		diff := value.Close - last
-		responseObject.Variation = append(responseObject.Variation,diff/last)
-		last = value.Close
-	}
-	a, _ := stats.StandardDeviationPopulation(responseObject.Variation)
-	fmt.Println(a)
+	responseObject.CalculateVariation()
 
         return responseObject, err
 }
