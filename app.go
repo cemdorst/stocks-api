@@ -9,7 +9,18 @@ import (
 )
 
 var aao = Historicals{}
+var stock = StockList{}
 
+func FindAllStocksEndPoint(w http.ResponseWriter, r *http.Request) {
+	//params := mux.Vars(r)
+	//path := "/stocks/"
+	data, err := stock.FindAll()
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJson(w, http.StatusOK, data)
+}
 func HistoricalEndPoint(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	path := "/stocks/historicals/" + params["symbol"]
@@ -48,6 +59,8 @@ func respondWithJson(w http.ResponseWriter, code int, payload interface{}) {
 // Define HTTP request routes
 func main() {
 	r := mux.NewRouter()
+	r.Path("/stocks").HandlerFunc(FindAllStocksEndPoint).Methods("GET")
+
 	r.Path("/historical/{symbol}").Queries("months", "{months}").HandlerFunc(HistoricalEndPoint).Methods("GET")
 	r.Path("/historical/{symbol}").HandlerFunc(HistoricalEndPoint).Methods("GET")
 

@@ -16,3 +16,14 @@ type Historical struct {
         Open    float64    `json:"open"`
         Volume  float64    `json:"volume"`
 }
+
+type Stocks struct {
+	Data []Stock       `json:"stocks"`
+}
+
+type Stock struct {
+	Symbol      string     `json:"symbol"`
+	Sector      string     `json:"sector"`
+	Subsector   string     `json:"subSector"`
+	Segment     string     `json:"segment"`
+}
