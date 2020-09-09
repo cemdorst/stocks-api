@@ -67,7 +67,7 @@ func (v *Historicals) CalculateVariation() (*Historicals) {
 			continue
 		}
 		diff := value.Close - last
-		v.Variation = append(v.Variation, math.log(diff))
+		v.Variation = append(v.Variation, math.Log(diff))
 		last = value.Close
 	}
 	stats.StandardDeviationPopulation(v.Variation)
