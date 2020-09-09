@@ -62,12 +62,25 @@ func (v *Historicals) CalculateVariation() (*Historicals) {
 
 	var last float64
 	for i,value := range v.Data {
+		signal := 1.0
 		if i == 0 {
 			last = value.Close
 			continue
 		}
 		diff := value.Close - last
-		v.Variation = append(v.Variation, math.Log(diff))
+		if diff < 0 {
+			diff = diff * -1.0
+			signal = -1.0
+			v.Variation = append(v.Variation, signal * math.Log(diff))
+			last = value.Close
+			continue
+		}
+		if diff == 0 {
+			v.Variation = append(v.Variation, 0.0)
+			last = value.Close
+			continue
+		}
+		v.Variation = append(v.Variation, signal * math.Log(diff))
 		last = value.Close
 	}
 	stats.StandardDeviationPopulation(v.Variation)
