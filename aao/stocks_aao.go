@@ -1,6 +1,7 @@
 package aao
 
 import (
+	"math"
 	"log"
 	. "github.com/cemdorst/stocks-api/config"
 	. "github.com/cemdorst/stocks-api/models"
@@ -44,7 +45,7 @@ func (v *Historicals) CalculateVariation() (*Historicals) {
 			continue
 		}
 		diff := value.Close - last
-		v.Variation = append(v.Variation,diff/last*100)
+		v.Variation = append(v.Variation, math.log(diff))
 		last = value.Close
 	}
 	stats.StandardDeviationPopulation(v.Variation)
