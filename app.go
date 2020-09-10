@@ -37,7 +37,7 @@ func VolatilityEndPoint(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	path := "/stocks/historicals/" + params["symbol"]
 	query := "?months=" + params["months"]
-	volatility_data, err := aao.CalculateVolatility(path,query)
+	volatility_data, err := aao.GetVolatility(path,query)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return

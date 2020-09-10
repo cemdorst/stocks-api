@@ -15,7 +15,8 @@ var config = Config{}
 
 type Historicals struct {
 	*StockHistoricals
-	Variation []float64
+	Variation  []float64
+	Volatility []float64
 }
 
 type StockList struct {
@@ -58,13 +59,14 @@ func (h *Historicals) GetHistorical(path,query string) (Historicals, error) {
 	return responseObject, err
 }
 
-func CalculateVolatility(days int, variation []float64) ([]float64) {
+func stdvdays(days int, variation []float64) ([]float64) {
 	var stdv []float64
 	var window []float64
 	for range variation {
 		if len(variation) > days {
 			window = variation[0:days]
 			stdvitem, _ := stats.StandardDeviationPopulation(window)
+			stdvitem = stdvitem * math.Sqrt(252)
 			stdv = append(stdv, stdvitem)
 			variation = variation[1:]
 		} else {
@@ -75,7 +77,7 @@ func CalculateVolatility(days int, variation []float64) ([]float64) {
 }
 
 
-func (v *Historicals) CalculateVariation() (*Historicals) {
+func (v *Historicals) CalculateVolatility() (*Historicals) {
 
 	var last float64
 	for i,value := range v.Data {
@@ -101,12 +103,12 @@ func (v *Historicals) CalculateVariation() (*Historicals) {
 		last = value.Close
 	}
 
-	CalculateVolatility(10, v.Variation)
+	v.Volatility = stdvdays(10, v.Variation)
 
         return v
 }
 
-func (v *Historicals) CalculateVolatility(path,query string) (Historicals, error) {
+func (v *Historicals) GetVolatility(path,query string) (Historicals, error) {
 	config.Read()
         response, err := http.Get(config.APIbase + path + query)
         if err != nil {
@@ -120,7 +122,7 @@ func (v *Historicals) CalculateVolatility(path,query string) (Historicals, error
 
         var responseObject Historicals
         json.Unmarshal(responseData, &responseObject)
-	responseObject.CalculateVariation()
+	responseObject.CalculateVolatility()
 
         return responseObject, err
 }
