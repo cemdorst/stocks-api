@@ -58,6 +58,23 @@ func (h *Historicals) GetHistorical(path,query string) (Historicals, error) {
 	return responseObject, err
 }
 
+func CalculateVolatility(days int, variation []float64) ([]float64) {
+	var stdv []float64
+	var window []float64
+	for range variation {
+		if len(variation) > days {
+			window = variation[0:days]
+			stdvitem, _ := stats.StandardDeviationPopulation(window)
+			stdv = append(stdv, stdvitem)
+			variation = variation[1:]
+		} else {
+			break
+		}
+	}
+	return stdv
+}
+
+
 func (v *Historicals) CalculateVariation() (*Historicals) {
 
 	var last float64
@@ -83,7 +100,8 @@ func (v *Historicals) CalculateVariation() (*Historicals) {
 		v.Variation = append(v.Variation, signal * math.Log(diff))
 		last = value.Close
 	}
-	stats.StandardDeviationPopulation(v.Variation)
+
+	CalculateVolatility(10, v.Variation)
 
         return v
 }
