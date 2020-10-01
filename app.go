@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	. "github.com/cemdorst/stocks-api/aao"
 )
@@ -66,7 +67,12 @@ func main() {
 
 	r.Path("/volatility/{symbol}").Queries("months", "{months}").HandlerFunc(VolatilityEndPoint).Methods("GET")
 	r.Path("/volatility/{symbol}").HandlerFunc(VolatilityEndPoint).Methods("GET")
-	if err := http.ListenAndServe(":3000", r); err != nil {
+
+	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With"})
+        originsOk := handlers.AllowedOrigins([]string{"http://localhost:4200"})
+        methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+
+	if err := http.ListenAndServe(":3000", (handlers.CORS(originsOk, headersOk, methodsOk)(r))); err != nil {
 		log.Fatal(err)
 	}
 }
